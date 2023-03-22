@@ -12,9 +12,6 @@ const config = {
 		// 	// change path below to your github repo if using Github Pages
 		// 	base: dev ? "" : "/sveltekit-unocss-template",
 		// },
-		prerender: {
-			entries: ["/prismic/1", "/prismic/2"],
-		},
 	},
 	vitePlugin: {
 		experimental: {

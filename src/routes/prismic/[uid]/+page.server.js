@@ -1,3 +1,5 @@
+export const prerender = false;
+
 import createClient from "$lib/prismicio";
 import * as prismicH from "@prismicio/helpers";
 
