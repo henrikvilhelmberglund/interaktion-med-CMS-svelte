@@ -8,9 +8,12 @@ const dev = process.argv.includes("dev");
 const config = {
 	kit: {
 		adapter: adapter(),
-		paths: {
-			// change path below to your github repo if using Github Pages
-			base: dev ? "" : "/sveltekit-unocss-template",
+		// paths: {
+		// 	// change path below to your github repo if using Github Pages
+		// 	base: dev ? "" : "/sveltekit-unocss-template",
+		// },
+		prerender: {
+			entries: ["/prismic/1", "/prismic/2"],
 		},
 	},
 	vitePlugin: {
