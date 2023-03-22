@@ -1,6 +1,6 @@
 <script>
 	import Nav from "$lib/Nav.svelte";
-	let routes = ["/01"];
+	let routes = ["/01", "/what-is-cms"];
 	let prefix = "/01lektion1";
 </script>
 
