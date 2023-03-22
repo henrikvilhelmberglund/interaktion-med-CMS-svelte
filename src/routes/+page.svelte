@@ -5,7 +5,7 @@
 </script>
 
 <main class="[&>*]:m-4">
-	<Welcome />
+  
 </main>
 
 <Footer />
