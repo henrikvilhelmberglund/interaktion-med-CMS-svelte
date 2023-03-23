@@ -1,7 +1,7 @@
 <script>
 	import Nav from "$lib/Nav.svelte";
 	import "@unocss/reset/antfu.css";
-	let routes = ["01lektion1", "prismic"];
+	let routes = ["01lektion1", "prismic", "strapi"];
 	let prefix = "/";
 </script>
 
