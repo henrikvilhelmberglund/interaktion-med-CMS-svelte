@@ -1,7 +1,7 @@
 <script>
 	let possibleStudying;
 	let getData = async () => {
-		let res = await fetch("https://strapi-0fd3.onrender.com/api/students");
+		let res = await fetch("http://127.0.0.1:1337/api/students");
 		let data = await res.json();
 		console.log(data);
 		return data;
