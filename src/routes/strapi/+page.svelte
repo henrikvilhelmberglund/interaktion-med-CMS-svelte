@@ -1,4 +1,8 @@
 <script>
+	import { quintOut } from "svelte/easing";
+	import { crossfade } from "svelte/transition";
+	import { flip } from "svelte/animate";
+
 	let possibleStudying;
 	let getData = async () => {
 		let res = await fetch("http://127.0.0.1:1337/api/students");
@@ -64,23 +68,21 @@
 	{#await getData()}
 		<p>Loading...</p>
 	{:then results}
-		{#key chosenMode}
-			{#if chosenValue !== "Any"}
-				{#each filtered(dataSorter(Object.values(results.data), chosenMode), chosenValue) as { attributes: { first_name, last_name, age, studying } }}
-					<p>
-						{first_name}
-						{last_name} ({age}), studying {studying}
-					</p>
-				{/each}
-			{:else}
-				{#each dataSorter(Object.values(results.data), chosenMode) as { attributes: { first_name, last_name, age, studying } }}
-					<p>
-						{first_name}
-						{last_name} ({age}), studying {studying}
-					</p>
-				{/each}
-			{/if}
-		{/key}
+		{#if chosenValue !== "Any"}
+			{#each filtered(dataSorter(Object.values(results.data), chosenMode), chosenValue) as { id, attributes: { first_name, last_name, age, studying } }, i (id)}
+				<p animate:flip={{ delay: i*100, duration: 1000, easing: quintOut }}>
+					{first_name}
+					{last_name} ({age}), studying {studying}
+				</p>
+			{/each}
+		{:else}
+			{#each dataSorter(Object.values(results.data), chosenMode) as { id, attributes: { first_name, last_name, age, studying } }, i (id)}
+				<p animate:flip={{ delay: i*100, duration: 1000, easing: quintOut }}>
+					{first_name}
+					{last_name} ({age}), studying {studying}
+				</p>
+			{/each}
+		{/if}
 	{:catch error}
 		<p>
 			{error}
