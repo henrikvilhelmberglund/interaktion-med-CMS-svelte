@@ -1,6 +1,5 @@
 <script>
 	import { quintOut } from "svelte/easing";
-	import { crossfade } from "svelte/transition";
 	import { flip } from "svelte/animate";
 
 	let possibleStudying;
@@ -23,6 +22,9 @@
 	}
 
 	function filtered(array, mode) {
+		if (mode === "Any") {
+			return array;
+		}
 		return array.filter((person) => person.attributes.studying === mode);
 	}
 
@@ -30,7 +32,7 @@
 
 	// console.log(possibleStudying);
 
-	let chosenMode = "default";
+	let sortMode = "default";
 	let modes = ["default", "descending", "ascending"];
 	console.log(possibleStudying);
 
@@ -50,15 +52,15 @@
 			return newArray;
 		}
 	}
-	let chosenValue;
+	let filterValue;
 </script>
 
 <main class="[&>*]:m-4">
 	<h1 class="text-2xl">Strapi-frontend!</h1>
 	{#each modes as mode}
-		<button on:click={() => (chosenMode = mode)} class="rounded bg-blue-400 p-1">{mode}</button>
+		<button on:click={() => (sortMode = mode)} class="rounded bg-blue-400 p-1">{mode}</button>
 	{/each}
-	<select bind:value={chosenValue} name="studying" id="studying">
+	<select bind:value={filterValue} name="studying" id="studying">
 		<option value="Any">Any</option>
 		{#each possibleStudying || "" as subject}
 			<option value={subject}>{subject}</option>
@@ -68,21 +70,16 @@
 	{#await getData()}
 		<p>Loading...</p>
 	{:then results}
-		{#if chosenValue !== "Any"}
-			{#each filtered(dataSorter(Object.values(results.data), chosenMode), chosenValue) as { id, attributes: { first_name, last_name, age, studying } }, i (id)}
-				<p animate:flip={{ delay: i*100, duration: 1000, easing: quintOut }}>
+		<div class="flex p-2 [&>*]:m-2 w-[50%]" >
+			{#each dataSorter(filtered(Object.values(results.data), filterValue), sortMode) as { id, attributes: { first_name, last_name, age, studying } }, i (id)}
+				<p
+					animate:flip={{ delay: i * 50, duration: 1000, easing: quintOut }}
+					class="rounded-md bg-slate-300 p-2">
 					{first_name}
 					{last_name} ({age}), studying {studying}
 				</p>
 			{/each}
-		{:else}
-			{#each dataSorter(Object.values(results.data), chosenMode) as { id, attributes: { first_name, last_name, age, studying } }, i (id)}
-				<p animate:flip={{ delay: i*100, duration: 1000, easing: quintOut }}>
-					{first_name}
-					{last_name} ({age}), studying {studying}
-				</p>
-			{/each}
-		{/if}
+		</div>
 	{:catch error}
 		<p>
 			{error}
