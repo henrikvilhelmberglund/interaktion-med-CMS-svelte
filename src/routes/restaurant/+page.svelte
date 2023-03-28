@@ -18,8 +18,9 @@
 		);
 		return arrayCopy;
 	};
-
 </script>
+
+<!-- TODO print categories, for each category print the dishes in order -->
 
 <main class="[&>*]:m-4">
 	<h1 class="text-2xl">Restaurant Ankademin</h1>
