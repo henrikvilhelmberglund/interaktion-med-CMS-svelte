@@ -38,39 +38,41 @@
 <svelte:head />
 
 <main class="flex flex-col bg-black [&>*]:m-4">
-	<h1 class="font-rubik text-center text-6xl text-white">Restaurant Ankademin</h1>
+	<h1 class="font-rubik text-center text-6xl text-white ">Restaurant Ankademin</h1>
 
 	{#await getData()}
 		<p>Loading...</p>
 	{:then results}
-		<div class="bg-hero-i-like-food-light/5 bg-dark-900  flex flex-1 p-2 [&>*]:m-px">
-			{#each allTypes as type}
-				<h2 class="font-arima py-6 text-left text-3xl text-white">{cap(type)}</h2>
-				{#each filter(sorted(Object.values(results.data)), type) as { id, attributes: { name, price, categories } }, i (id)}
-					<div
-						class="bg-hero-diagonal-stripes-light/1 font-arima rounded-md bg-slate-900 p-2 text-white"
-						animate:flip={{ delay: i * 50, duration: 1000, easing: quintOut }}>
-						<p class="text-2xl">
-							{name}
-							<span class="text-base">
-								{price}:-
-							</span>
-						</p>
+		<div class="bg-hero-i-like-food-light/5 bg-dark-900 flex flex-1 p-2 [&>*]:m-px">
+			{#each allTypes as type, i}
+				<article class="space-y-2">
+					<h2 class="font-arima py-6 text-left text-3xl text-white">{cap(type)}</h2>
+					{#each filter(sorted(Object.values(results.data)), type) as { id, attributes: { name, price, categories } }, i (id)}
+						<div
+							class="bg-hero-diagonal-stripes-light/1 font-arima rounded-md bg-slate-900 p-2 text-white"
+							animate:flip={{ delay: i * 50, duration: 1000, easing: quintOut }}>
+							<p class="text-2xl">
+								{name}
+								<span class="text-base">
+									{price}:-
+								</span>
+							</p>
 
-						<ul class="list-none">
-							{#each Object.values(categories.data) as { attributes: { name: categoryName } }}
-								{#if categoryName !== type}
-									<li
-										class:nuts={categoryName === "contains nuts"}
-										class:on-sale={categoryName === "on sale"}
-										class:vegetarian={categoryName === "vegetarian"}>
-										{categoryName}
-									</li>
-								{/if}
-							{/each}
-						</ul>
-					</div>
-				{/each}
+							<ul class="list-none">
+								{#each Object.values(categories.data) as { attributes: { name: categoryName } }}
+									{#if categoryName !== type}
+										<li
+											class:nuts={categoryName === "contains nuts"}
+											class:on-sale={categoryName === "on sale"}
+											class:vegetarian={categoryName === "vegetarian"}>
+											{categoryName}
+										</li>
+									{/if}
+								{/each}
+							</ul>
+						</div>
+					{/each}
+				</article>
 			{/each}
 		</div>
 	{:catch error}
