@@ -4,12 +4,14 @@ import presetUno from "@unocss/preset-uno";
 import presetWebFonts from "@unocss/preset-web-fonts";
 import presetIcons from "@unocss/preset-icons";
 import transformerDirectives from "@unocss/transformer-directives";
+import { presetHeroPatterns } from "@julr/unocss-preset-heropatterns";
 import { defineConfig } from "vite";
 
 export default defineConfig({
 	plugins: [
 		UnoCSS({
 			presets: [
+				presetHeroPatterns(),
 				presetUno(),
 				presetWebFonts({
 					provider: "google", // default provider
@@ -30,6 +32,8 @@ export default defineConfig({
 								provider: "none",
 							},
 						],
+						rubik: "Rubik Vinyl",
+						arima: "Arima",
 					},
 				}),
 				presetIcons({
