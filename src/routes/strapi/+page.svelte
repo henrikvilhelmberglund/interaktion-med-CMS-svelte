@@ -5,7 +5,7 @@
 	let possibleStudying;
 
 	let getSchoolData = async () => {
-		let res = await fetch("http://127.0.0.1:1337/api/school");
+		let res = await fetch("http://127.0.0.1:1337/api/school?populate=*");
 		let data = await res.json();
 		console.log(data);
 		return data;
@@ -77,11 +77,11 @@
 
 	{#await getSchoolData()}
 		<p>Loading...</p>
-	{:then { data: { attributes: { name, motto, location, contact } } }}
+	{:then { data: { attributes: { name, motto, location: { country, city }, contact } } }}
 		<div class="w-[50%] rounded-xl bg-blue-300 p-8 ">
 			<p class="text-3xl">{name}</p>
 			<p class="text-base italic">{motto}</p>
-			<p class="text-base">We are located in {location}.</p>
+			<p class="text-base">We are located in {city} in {country}.</p>
 			<span
 				>Contact us at <a class="inline text-blue-700" href="mailto:{contact}">{contact}</a></span>
 		</div>
@@ -91,15 +91,36 @@
 		<p>Loading...</p>
 	{:then results}
 		<div class="flex w-[50%] p-2 [&>*]:m-2">
-			{#each dataSorter(filtered(Object.values(results.data), filterValue), sortMode) as { id, attributes: { first_name, last_name, age, studying, courses } }, i (id)}
-				<p
-					animate:flip={{ delay: i * 50, duration: 1000, easing: quintOut }}
-					class="rounded-md bg-slate-300 p-2">
-					{first_name}
-					{last_name} ({age}), studying {studying}
-					{first_name}'s courses are:
-					{courses.map((course) => `${course.name} (${course.yh_points})`)}
-				</p>
+			{#each dataSorter(filtered(Object.values(results.data), filterValue), sortMode) as { id, attributes: { first_name, last_name, age, studying, courses, teacher } }, i (id)}
+				<div
+					class="rounded-md bg-slate-300 p-2"
+					animate:flip={{ delay: i * 50, duration: 1000, easing: quintOut }}>
+					<p>
+						{first_name}
+						{last_name} ({age}), studying {studying}
+					</p>
+					<p>
+						{first_name}'s courses are:
+					</p>
+					<ul class="list-disc pl-5">
+						{#each courses as { name, yh_points }}
+							<li>
+								{name} ({yh_points})
+							</li>
+						{/each}
+					</ul>
+					{#if teacher.data}
+						{@const {
+							name: teacher_name,
+							age: teacher_age,
+							email: teacher_email,
+						} = teacher.data.attributes}
+						<p>
+							{first_name}'s teacher is {teacher_name} ({teacher_age}) who can be contacted at
+							<a class="inline text-blue-700" href="mailto:{teacher_email}">{teacher_email}</a>
+						</p>
+					{/if}
+				</div>
 			{/each}
 		</div>
 	{:catch error}
