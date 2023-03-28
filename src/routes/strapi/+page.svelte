@@ -3,8 +3,16 @@
 	import { flip } from "svelte/animate";
 
 	let possibleStudying;
+
+	let getSchoolData = async () => {
+		let res = await fetch("http://127.0.0.1:1337/api/school");
+		let data = await res.json();
+		console.log(data);
+		return data;
+	};
+
 	let getData = async () => {
-		let res = await fetch("http://127.0.0.1:1337/api/students");
+		let res = await fetch("http://127.0.0.1:1337/api/students?populate=*");
 		let data = await res.json();
 		console.log(data);
 		return data;
@@ -67,16 +75,30 @@
 		{/each}
 	</select>
 
+	{#await getSchoolData()}
+		<p>Loading...</p>
+	{:then { data: { attributes: { name, motto, location, contact } } }}
+		<div class="w-[50%] rounded-xl bg-blue-300 p-8 ">
+			<p class="text-3xl">{name}</p>
+			<p class="text-base italic">{motto}</p>
+			<p class="text-base">We are located in {location}.</p>
+			<span
+				>Contact us at <a class="inline text-blue-700" href="mailto:{contact}">{contact}</a></span>
+		</div>
+	{/await}
+
 	{#await getData()}
 		<p>Loading...</p>
 	{:then results}
-		<div class="flex p-2 [&>*]:m-2 w-[50%]" >
-			{#each dataSorter(filtered(Object.values(results.data), filterValue), sortMode) as { id, attributes: { first_name, last_name, age, studying } }, i (id)}
+		<div class="flex w-[50%] p-2 [&>*]:m-2">
+			{#each dataSorter(filtered(Object.values(results.data), filterValue), sortMode) as { id, attributes: { first_name, last_name, age, studying, courses } }, i (id)}
 				<p
 					animate:flip={{ delay: i * 50, duration: 1000, easing: quintOut }}
 					class="rounded-md bg-slate-300 p-2">
 					{first_name}
 					{last_name} ({age}), studying {studying}
+					{first_name}'s courses are:
+					{courses.map((course) => `${course.name} (${course.yh_points})`)}
 				</p>
 			{/each}
 		</div>
