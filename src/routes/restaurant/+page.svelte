@@ -51,7 +51,8 @@
 	let allTypeLinks = [...allTypes];
 </script>
 
-<main class="flex min-h-[95.9vh] flex-col bg-black [&>*]:m-4">
+<main
+	class="flex min-h-[200vh] w-[200vw] flex-col bg-black md:min-h-[95.9vh] md:w-[99.14vw] [&>*]:m-4">
 	{#await getRestaurantData()}
 		<!-- <p>Loading restaurant data...</p> -->
 	{:then value}
@@ -141,10 +142,10 @@
 								{#if ingredients}
 									<div class="flex flex-row items-center gap-3">
 										{#each ingredients as { name, quantity }}
-                    <p class="bg-black/50 p-1 rounded-md">
-
-											{quantity} {name}
-                    </p>
+											<p class="rounded-md bg-black/50 p-1">
+												{quantity}
+												{name}
+											</p>
 										{/each}
 									</div>
 								{/if}
