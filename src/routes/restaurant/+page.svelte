@@ -2,11 +2,22 @@
 	import { base } from "$app/paths";
 	import { quintOut } from "svelte/easing";
 	import { flip } from "svelte/animate";
+	import DOMPurify from "dompurify";
+	import { marked } from "marked";
+
+	let showEmployees = false;
 
 	let API_BASE = "http://127.0.0.1:1337/api/dishes?populate=*";
 
 	let getData = async () => {
 		let res = await fetch(API_BASE);
+		let data = await res.json();
+		console.log(data);
+		return data;
+	};
+
+	let getRestaurantData = async () => {
+		let res = await fetch("http://127.0.0.1:1337/api/restaurant?populate=*");
 		let data = await res.json();
 		console.log(data);
 		return data;
@@ -36,13 +47,40 @@
 	};
 
 	let allTypes = ["starter", "main", "dessert", "beverage"];
-  let allTypeLinks = [...allTypes];
+	let allTypeLinks = [...allTypes];
 </script>
 
-<svelte:head />
-
-<main class="flex flex-col bg-black [&>*]:m-4 min-h-[95.9vh]">
-	<h1 class="font-rubik text-center text-6xl text-white ">Restaurant Ankademin</h1>
+<main class="flex min-h-[95.9vh] flex-col bg-black [&>*]:m-4">
+	{#await getRestaurantData()}
+		<p>Loading restaurant data...</p>
+	{:then value}
+		<!-- {#each Object.entries(value.data) as [key, { name, address, latest_news, employees }]} -->
+		<!-- {#if key === "attributes"} -->
+		{@const { name, address, latest_news, employees } = value.data.attributes}
+		<p class="font-rubik text-center text-6xl text-white">
+			{name}
+		</p>
+		<p class="text-white">
+      We are located in {address}.
+		</p>
+		<div class="nice-markdown">
+      {@html DOMPurify.sanitize(marked.parse(latest_news))}
+		</div>
+		<div class="text-white">
+      <!-- <button on:click={() => (showEmployees = !showEmployees)} class="">Show employees</button> -->
+			{#if !showEmployees}
+      {#each Object.entries(employees.data) as [key, { attributes: { first_name, last_name, employment_start, role } }]}
+      <p class="text-4xl text-white">{first_name} {last_name} started {employment_start}</p>
+      <p class="text-4xl text-white">{first_name} {last_name} started {employment_start}</p>
+      <!-- <p class="text-4xl text-white">awawa</p> -->
+      {/each}
+			{/if}
+		</div>
+		<!-- {/if}	 -->
+		<!-- {/each} -->
+	{:catch error}
+		{error}
+	{/await}
 
 	<nav class="flex gap-4">
 		{#each ["all menu", ...allTypeLinks] as link}
@@ -113,5 +151,32 @@
 	}
 	.vegetarian {
 		@apply m-2 ml-0 inline-block rounded bg-green-500 p-2 text-lg text-black;
+	}
+
+	.nice-markdown {
+		@apply bg-hero-topography-light/5 border-1 rounded-xl bg-black p-2 text-white;
+	}
+
+	:global(.nice-markdown h3) {
+		@apply text-3xl;
+	}
+	:global(.nice-markdown blockquote) {
+		background: #111111;
+		border-left: 10px solid #ccc;
+		margin: 1.5em 10px;
+		padding: 0.5em 10px;
+		quotes: "\201C""\201D""\2018""\2019";
+	}
+
+	:global(.nice-markdown blockquote:before) {
+		color: #ccc;
+		content: open-quote;
+		font-size: 4em;
+		line-height: 0.1em;
+		margin-right: 0.25em;
+		vertical-align: -0.4em;
+	}
+	:global(.nice-markdown blockquote p) {
+		display: inline;
 	}
 </style>
