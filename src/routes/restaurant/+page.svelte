@@ -4,7 +4,7 @@
 	import { flip } from "svelte/animate";
 	import DOMPurify from "dompurify";
 	import { marked } from "marked";
-  import { fade } from "svelte/transition";
+	import { fade } from "svelte/transition";
 
 	let showEmployees = false;
 
@@ -107,33 +107,47 @@
 		{#await getData()}
 			<p>Loading...</p>
 		{:then results}
-			<div in:fade class="bg-hero-i-like-food-light/5 bg-dark-900 flex flex-1 p-2 [&>*]:m-px">
+			<div
+				in:fade
+				class="bg-hero-i-like-food-light/5 bg-dark-900 flex flex-1 flex-col p-2 [&>*]:m-px">
 				{#each allTypes as type}
 					<article class="space-y-2">
 						<h2 class="font-arima py-6 text-left text-3xl text-white">{cap(type)}</h2>
-						{#each filter(sorted(Object.values(results.data)), type) as { id, attributes: { name, price, categories } }, i (id)}
+						{#each filter(sorted(Object.values(results.data)), type) as { id, attributes: { name, price, categories, ingredients } }, i (id)}
 							<div
-								class="bg-hero-diagonal-stripes-light/1 font-arima rounded-md bg-slate-900 p-4 text-white"
+								class="bg-hero-diagonal-stripes-light/1 font-arima flex-row justify-between rounded-md bg-slate-900 p-4 text-white"
 								animate:flip={{ delay: i * 50, duration: 1000, easing: quintOut }}>
-								<p class="text-2xl">
-									{name}
-									<span class="text-base">
-										{price}:-
-									</span>
-								</p>
+								<div>
+									<p class="text-2xl">
+										{name}
+										<span class="text-base">
+											{price}:-
+										</span>
+									</p>
 
-								<ul class="list-none">
-									{#each Object.values(categories.data) as { attributes: { name: categoryName } }}
-										{#if categoryName !== type}
-											<li
-												class:nuts={categoryName === "contains nuts"}
-												class:on-sale={categoryName === "on sale"}
-												class:vegetarian={categoryName === "vegetarian"}>
-												{categoryName}
-											</li>
-										{/if}
-									{/each}
-								</ul>
+									<ul class="list-none">
+										{#each Object.values(categories.data) as { attributes: { name: categoryName } }}
+											{#if categoryName !== type}
+												<li
+													class:nuts={categoryName === "contains nuts"}
+													class:on-sale={categoryName === "on sale"}
+													class:vegetarian={categoryName === "vegetarian"}>
+													{categoryName}
+												</li>
+											{/if}
+										{/each}
+									</ul>
+								</div>
+								{#if ingredients}
+									<div class="flex flex-row items-center gap-3">
+										{#each ingredients as { name, quantity }}
+                    <p class="bg-black/50 p-1 rounded-md">
+
+											{quantity} {name}
+                    </p>
+										{/each}
+									</div>
+								{/if}
 							</div>
 						{/each}
 					</article>
