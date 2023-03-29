@@ -4,6 +4,7 @@
 	import { flip } from "svelte/animate";
 	import DOMPurify from "dompurify";
 	import { marked } from "marked";
+  import { fade } from "svelte/transition";
 
 	let showEmployees = false;
 
@@ -52,7 +53,7 @@
 
 <main class="flex min-h-[95.9vh] flex-col bg-black [&>*]:m-4">
 	{#await getRestaurantData()}
-		<p>Loading restaurant data...</p>
+		<!-- <p>Loading restaurant data...</p> -->
 	{:then value}
 		<!-- {#each Object.entries(value.data) as [key, { name, address, latest_news, employees }]} -->
 		<!-- {#if key === "attributes"} -->
@@ -61,20 +62,23 @@
 			{name}
 		</p>
 		<p class="text-white">
-      We are located in {address}.
+			We are located in {address}.
 		</p>
 		<div class="nice-markdown">
-      {@html DOMPurify.sanitize(marked.parse(latest_news))}
+			{@html DOMPurify.sanitize(marked.parse(latest_news))}
 		</div>
 		<div class="text-white">
-      <!-- <button on:click={() => (showEmployees = !showEmployees)} class="">Show employees</button> -->
-			{#if !showEmployees}
-      {#each Object.entries(employees.data) as [key, { attributes: { first_name, last_name, employment_start, role } }]}
-      <p class="text-4xl text-white">{first_name} {last_name} started {employment_start}</p>
-      <p class="text-4xl text-white">{first_name} {last_name} started {employment_start}</p>
-      <!-- <p class="text-4xl text-white">awawa</p> -->
-      {/each}
-			{/if}
+			<button
+				class="w-32 rounded-md bg-blue-800 p-1 hover:bg-blue-700"
+				on:click={() => (showEmployees = !showEmployees)}>Show employees</button>
+			{#each Object.values(employees.data) as { attributes: { first_name, last_name, employment_start, role } }}
+				{#if showEmployees}
+					<p class="text-2xl text-white">
+						<span class="underline-green-500 underline-1 underline">{first_name} {last_name}</span>
+						is our {role} who started to work for us on {employment_start}.
+					</p>
+				{/if}
+			{/each}
 		</div>
 		<!-- {/if}	 -->
 		<!-- {/each} -->
@@ -94,7 +98,8 @@
 						allTypes = [link];
 					}
 				}}
-				class="text-blue-500">{cap(link)}</button>
+				class="font-arima rounded-md bg-slate-900 p-2 text-3xl text-blue-500 transition-all hover:text-blue-300"
+				>{cap(link)}</button>
 		{/each}
 	</nav>
 
@@ -102,7 +107,7 @@
 		{#await getData()}
 			<p>Loading...</p>
 		{:then results}
-			<div class="bg-hero-i-like-food-light/5 bg-dark-900 flex flex-1 p-2 [&>*]:m-px">
+			<div in:fade class="bg-hero-i-like-food-light/5 bg-dark-900 flex flex-1 p-2 [&>*]:m-px">
 				{#each allTypes as type}
 					<article class="space-y-2">
 						<h2 class="font-arima py-6 text-left text-3xl text-white">{cap(type)}</h2>
