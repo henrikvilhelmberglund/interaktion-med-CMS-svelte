@@ -40,9 +40,11 @@
 
 {#if !myUser || error}
 	<div class="flex items-center">
+    <form action="">
 		<div class="rounded-lg bg-slate-300 p-6 [&>*]:m-2 [&>*]:p-2">
 			<h1 class="text-3xl">Login</h1>
-			<input
+
+        <input
 				bind:value={inputUsername}
 				placeholder="Username"
 				id="username"
@@ -62,11 +64,12 @@
 				disabled={!inputUsername || !inputPassword}
 				class="disabled:hover-bg-blue-400 mt-4 rounded bg-blue-400 p-2 hover:bg-blue-300 disabled:opacity-25"
 				>Logga in</button>
-		</div>
+      </div>
+    </form>
 		{#if error}
 			<div class="mt-4 rounded-lg bg-red-500 p-4" transition:fly={{ y: 20 }}>
 				<p class="">Invalid credentials.</p>
-				<p class="">Please try again</p>
+				<p class="">Please try again.</p>
 			</div>
 		{/if}
 	</div>
