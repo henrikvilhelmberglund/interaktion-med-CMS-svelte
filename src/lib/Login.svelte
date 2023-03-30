@@ -46,7 +46,7 @@
 
         <input
 				bind:value={inputUsername}
-				placeholder="Username"
+				placeholder="Username or email"
 				id="username"
 				class="rounded border p-2"
 				type="text" />
