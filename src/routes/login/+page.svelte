@@ -1,6 +1,7 @@
 <script>
-	import Login from "$lib/Login.svelte";
-	let myUser = undefined;
+	import LoginRegister from "$lib/LoginRegister.svelte";
+	let myUser = {};
+	let allUsers;
 
 	// authorization
 	async function getUsers() {
@@ -14,18 +15,22 @@
 		console.log(data);
 		return data;
 	}
-
-	let allUsers;
 </script>
 
 <main class="[&>*]:m-4">
-	<Login bind:myUser />
+	<LoginRegister bind:myUser />
 
-	{#if myUser}
+	{#if myUser && myUser.hasOwnProperty("user")}
 		<h2 class="text-xl">Succesfully logged in! Welcome, {myUser.user.username}!</h2>
 		<button
 			on:click={async () => (allUsers = await getUsers())}
 			class="rounded bg-blue-400 p-2 hover:bg-blue-300">Hämta alla användare</button>
+		<button
+			on:click={() => {
+				sessionStorage.removeItem("token");
+				location.reload();
+			}}
+			class="rounded bg-blue-400 p-2 hover:bg-blue-300">Clear token</button>
 
 		{#if allUsers}
 			{#each Object.values(allUsers) as user}
