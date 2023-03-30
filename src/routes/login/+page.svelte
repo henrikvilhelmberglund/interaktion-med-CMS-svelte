@@ -65,6 +65,7 @@
 					type="text" />
 				<input
 					bind:value={inputPassword}
+					on:input={() => (error = false)}
 					placeholder="Password"
 					id="password"
 					class="rounded border p-2"
@@ -76,15 +77,13 @@
 					disabled={!inputUsername || !inputPassword}
 					class="disabled:hover-bg-blue-400 mt-4 rounded bg-blue-400 p-2 hover:bg-blue-300 disabled:opacity-25"
 					>Logga in</button>
-
-					
 			</div>
-      {#if error && !inputPassword}
-						<div class="p-4 mt-4 rounded-lg bg-red-500" transition:fly={{ y: 20 }}>
-							<p class="">Invalid credentials.</p>
-							<p class="">Please try again</p>
-						</div>
-					{/if}
+			{#if error}
+				<div class="mt-4 rounded-lg bg-red-500 p-4" transition:fly={{ y: 20 }}>
+					<p class="">Invalid credentials.</p>
+					<p class="">Please try again</p>
+				</div>
+			{/if}
 		</div>
 	{/if}
 
