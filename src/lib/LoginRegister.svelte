@@ -16,8 +16,6 @@
 		// myUser = JSON.parse(sessionStorage.getItem("userData"));
 	});
 
-
-
 	export let myUser = {};
 	let error = false;
 	let inputUsername;
@@ -91,7 +89,6 @@
 			throw e;
 		}
 	}
-
 </script>
 
 {#if !Object.keys(myUser).length || error}
@@ -124,7 +121,7 @@
 						}}
 						disabled={!inputUsername || !inputPassword}
 						class="disabled:hover-bg-blue-400 mt-4 rounded bg-blue-400 p-2 hover:bg-blue-300 disabled:opacity-25"
-						>Logga in</button>
+						>Log in</button>
 				{:else if mode === "register"}
 					<input
 						bind:value={registerUsername}
@@ -159,7 +156,7 @@
 						}}
 						disabled={!registerUsername || !registerEmail || !registerPassword}
 						class="disabled:hover-bg-blue-400 mt-4 rounded bg-blue-400 p-2 hover:bg-blue-300 disabled:opacity-25"
-						>Registrera</button>
+						>Register</button>
 				{/if}
 			</div>
 		</form>
@@ -180,7 +177,6 @@
 		{/if}
 	</div>
 {/if}
-
 
 <style>
 </style>
