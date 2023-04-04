@@ -10,6 +10,9 @@
 		"04lektion4",
 		"auth",
 		"login",
+    "05lektion5",
+    "crud",
+    "todo-app",
 	];
 	let prefix = "/";
 </script>
