@@ -15,6 +15,7 @@
 	import TodoList from "$lib/TodoList.svelte";
 	import { sendRequest } from "$lib/api";
 
+	let showLoginPopup = false;
 	let myUser = {};
 	let addModal = false;
 	let todos = [];
@@ -22,7 +23,13 @@
 	let todoDescription;
 	let todoDone;
 	$: {
-		if (myUser.hasOwnProperty("user")) setTodos();
+		if (myUser.hasOwnProperty("user")) {
+			setTodos();
+			showLoginPopup = true;
+			setTimeout(() => {
+				showLoginPopup = false;
+			}, 1500);
+		}
 	}
 
 	async function setTodos() {
@@ -158,6 +165,14 @@
 					Add TODO</button>
 			</form>
 		{/if}
+	{/if}
+	{#if myUser.hasOwnProperty("user") && showLoginPopup}
+		<div
+			id="login-popup"
+			class="z-100 absolute mt-4 rounded-lg bg-green-500 p-4"
+			transition:fly={{ y: 20 }}>
+			<p>Successfully logged in as {myUser.user?.username}!</p>
+		</div>
 	{/if}
 </main>
 
