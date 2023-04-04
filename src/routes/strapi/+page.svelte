@@ -15,6 +15,7 @@
 		let res = await fetch("http://127.0.0.1:1337/api/students?populate=*");
 		let data = await res.json();
 		console.log(data);
+    saveSubjects();
 		return data;
 	};
 	let subjectsPromise = getData();
@@ -36,13 +37,11 @@
 		return array.filter((person) => person.attributes.studying === mode);
 	}
 
-	saveSubjects();
 
 	// console.log(possibleStudying);
 
 	let sortMode = "default";
 	let modes = ["default", "descending", "ascending"];
-	console.log(possibleStudying);
 
 	function dataSorter(array, mode) {
 		if (mode === "default") {
