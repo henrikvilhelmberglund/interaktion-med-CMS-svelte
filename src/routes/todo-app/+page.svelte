@@ -10,19 +10,17 @@
 	// 7. Skapa funktionalitet för att utföra todos med ett knapptryck.
 	// 8. TODO Dela upp dina todos i en “Att göra”-lista samt en “Avklarade ärenden”-lista.
 
-	import axios from "axios";
-	import LoginRegister from "$lib/LoginRegister.svelte";
 	import { fly, fade } from "svelte/transition";
+	import LoginRegister from "$lib/LoginRegister.svelte";
+	import TodoList from "$lib/TodoList.svelte";
+	import { sendRequest } from "$lib/api";
 
 	let myUser = {};
-
 	let addModal = false;
+	let todos = [];
 	let todoTitle;
 	let todoDescription;
 	let todoDone;
-	let todos = [];
-	let edit = [];
-
 	$: {
 		if (myUser.hasOwnProperty("user")) setTodos();
 	}
@@ -31,48 +29,17 @@
 		todos = await getTodos();
 	}
 
-	function clickOutside(element) {
-		document.querySelector("#focus-me").focus();
-		function onClick(event) {
-			if (!element.contains(event.target)) {
-				console.log("clicked outside of modal - closing!");
-				addModal = false;
-			}
-		}
-		document.body.addEventListener("click", onClick);
-		return {
-			update(newCallbackFunction) {
-				callbackFunction = newCallbackFunction;
-			},
-			destroy() {
-				document.body.removeEventListener("click", onClick);
-			},
-		};
-	}
-
-	function clearInputs() {
-		todoTitle = "";
-		todoDescription = "";
-		todoDone = false;
-	}
-
-	const sendRequest = async (method, url, data = null) => {
-		try {
-			const headers = {
-				Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-			};
-			const response = await axios({
-				method,
-				url,
-				headers,
-				data,
-			});
-			return response.data.data;
-		} catch (e) {
-			console.error(e);
-			throw e.request;
-		}
+  let deleteTodo = async (id) => {
+		const deleteTodo = await sendRequest("DELETE", `http://127.0.0.1:1337/api/todos/${id}`);
+		todos = todos.filter((todo) => todo.id !== id);
+		return deleteTodo;
 	};
+
+  function updateTodoList(updatedTodo) {
+    const index = todos.findIndex(todo => todo.id === updatedTodo.id);
+    todos[index] = updatedTodo;
+    todos = [...todos]; // Trigger reactivity
+  }
 
 	const getTodos = async () => {
 		const data = await sendRequest("GET", "http://127.0.0.1:1337/api/todos");
@@ -96,39 +63,30 @@
 		return newTodo;
 	};
 
-	let updateTodo = async (id) => {
-		const requestData = {
-			data: {
-				title: todoTitle,
-				description: todoDescription,
-				done: todoDone,
+	function clickOutside(element) {
+		document.querySelector("#focus-me").focus();
+		function onClick(event) {
+			if (!element.contains(event.target)) {
+				console.log("clicked outside of modal - closing!");
+				addModal = false;
+			}
+		}
+		document.body.addEventListener("click", onClick);
+		return {
+			update(newCallbackFunction) {
+				callbackFunction = newCallbackFunction;
+			},
+			destroy() {
+				document.body.removeEventListener("click", onClick);
 			},
 		};
+	}
 
-		const updatedTodo = await sendRequest(
-			"PUT",
-			`http://127.0.0.1:1337/api/todos/${id}`,
-			requestData
-		);
-		let updatedTodos = todos.map((todo) => {
-			if (todo.id === updatedTodo.id) {
-				return updatedTodo;
-			} else {
-				return todo;
-			}
-		});
-		console.log(updatedTodos);
-		todos = updatedTodos;
-		edit[id] = false;
-		clearInputs();
-		return updatedTodo;
-	};
-
-	let deleteTodo = async (id) => {
-		const deleteTodo = await sendRequest("DELETE", `http://127.0.0.1:1337/api/todos/${id}`);
-		todos = todos.filter((todo) => todo.id !== id);
-		return deleteTodo;
-	};
+	export function clearInputs() {
+		todoTitle = "";
+		todoDescription = "";
+		todoDone = false;
+	}
 </script>
 
 <main class="flex flex-col items-center [&>*]:m-4">
@@ -144,86 +102,14 @@
 	</div>
 
 	{#if todos.length > 0}
-		<div class="border-1 h-[600px] overflow-auto rounded-md border-green-500 p-2 [&>*]:m-2">
-			{#each Object.values(todos) as { id, attributes: { title, description, done } }}
-				<div
-					transition:fly={{ y: 30 }}
-					class:bg-green-200={done}
-					class="flex max-w-[600px] flex-row justify-between rounded-lg bg-blue-200 p-4">
-					{#if !edit[id]}
-						<div class="flex-col">
-							<h2 class="p-1 text-2xl">{title}</h2>
-							<p class="p-1">{description}</p>
-							<input
-								on:change={async () => {
-									todoTitle = title;
-									todoDescription = description;
-									todoDone = !done;
-									updateTodo(id);
-								}}
-								type="checkbox"
-								class:!bg-green-500={done}
-								class="h-6 w-6 self-start"
-								checked={done}
-								name=""
-								id="" />
-						</div>
-						<div class="flex w-20 flex-row items-start justify-end [&>*]:m-2">
-							<button
-								on:click={async () => {
-									edit = [];
-									todoTitle = title;
-									todoDescription = description;
-									todoDone = done;
-									edit[id] = true;
-								}}
-								class="p-1">✏</button>
-							<button on:click={async () => deleteTodo(id)} class="p-1">❌</button>
-						</div>
-					{:else}
-						<div class="flex-col">
-							<textarea
-								on:input={() => {
-									event.target.style.height = event.target.scrollHeight + "px";
-								}}
-								class="h-[40px] w-60 p-px text-2xl"
-								bind:value={todoTitle} />
-							<!-- <h2 class="text-2xl">{title}</h2> -->
-							<textarea
-								cols="54"
-								on:input={() => {
-									event.target.style.height = event.target.scrollHeight + "px";
-								}}
-								class="h-[40px]  w-60 p-px "
-								bind:value={todoDescription} />
-
-							<input
-								type="checkbox"
-								class:!bg-green-500={done}
-								class="h-6 w-6 self-start"
-								bind:checked={todoDone}
-								name=""
-								id="" />
-						</div>
-						<div class="flex w-20 flex-row items-start justify-end [&>*]:m-2">
-							<button
-								on:click={async () => {
-									if (done === todoDone && title === todoTitle && description === todoDescription) {
-										edit[id] = false;
-										todoTitle = "";
-										todoDescription = "";
-										todoDone = false;
-										return;
-									}
-									updateTodo(id);
-								}}
-								class="p-px">✅</button>
-
-							<button on:click={async () => deleteTodo(id)} class="p-px">❌</button>
-						</div>
-					{/if}
-				</div>
-			{/each}
+		<div
+			class="border-1 h-[600px] flex-row overflow-auto rounded-md border-green-500 p-2 [&>*]:m-2">
+			<div>
+				<TodoList {todos} deleteTodo={deleteTodo} updateTodoList={updateTodoList} done={true} />
+			</div>
+			<div>
+				<TodoList {todos} deleteTodo={deleteTodo} updateTodoList={updateTodoList} done={false} />
+			</div>
 		</div>
 	{/if}
 	{#if !myUser.hasOwnProperty("user")}
