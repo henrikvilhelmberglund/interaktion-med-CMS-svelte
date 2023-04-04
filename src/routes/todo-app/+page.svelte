@@ -3,13 +3,15 @@
 
 	// 1. Skapa en Collection type för todos i Strapi.
 	// 2. Varje todo ska ha en titel, beskrivning samt en boolean för om den är utförd eller inte.
-	// TODO 3. Gör det möjligt för användaren att kunna skapa upp todos i din applikation.
-	// 4. Kräv sedan att användaren loggar in för att kunna se alla todos samt skapa nya samt redigera/ta bort todos .
+	// 3. Gör det möjligt för användaren att kunna skapa upp todos i din applikation.
+	// TODO  4. Kräv sedan att användaren loggar in för att kunna se alla todos samt skapa nya samt redigera/ta bort todos .
 
 	import axios from "axios";
+	import LoginRegister from "$lib/LoginRegister.svelte";
 	let methods = ["GET", "POST", "PUT", "DELETE"];
 
 	let myTodos = [];
+	let myUser = {};
 
 	let todoTitle;
 	let todoDescription;
@@ -23,11 +25,20 @@
 		// },
 		// });
 
-		let res = await axios.get("http://127.0.0.1:1337/api/todos");
-		let data = res.data;
-		// console.log(res);
-		console.log(data.data);
-		return data.data;
+		try {
+			let res = await axios.get("http://127.0.0.1:1337/api/todos", {
+				headers: {
+					Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+				},
+			});
+			let data = res.data;
+			// console.log(res);
+			console.log(data.data);
+			return data.data;
+		} catch (error) {
+			// console.log("threw error");
+			throw error.request;
+		}
 	};
 
 	let addTodo = async () => {
@@ -141,10 +152,16 @@
 
 <main class="[&>*]:m-4">
 	<h1 class="text-5xl">My TODOs</h1>
+	<button
+		on:click={() => {
+			sessionStorage.removeItem("token");
+			location.reload();
+		}}
+		class="rounded bg-blue-400 p-2 hover:bg-blue-300">Clear token</button>
+
 	{#each methods as method}
 		{#if method === "GET"}
 			<div class="border-1 rounded-md border-green-500 p-2 [&>*]:m-2">
-				
 				<!-- <button
 					on:click={async () => {
 						myTodos = await getTodos();
@@ -154,18 +171,19 @@
 				{#await getTodos()}
 					<p>Loading todos...</p>
 				{:then myTodos}
-					{#if myTodos}
-						{#each Object.values(myTodos) as { attributes: { title, description, done } }}
-            <div class="flex w-80 bg-blue-200 p-4 rounded-lg">
-              
-              <h2 class="text-2xl">{title}</h2>
+					{#each Object.values(myTodos) as { attributes: { title, description, done } }}
+						<div class="flex w-80 rounded-lg bg-blue-200 p-4">
+							<h2 class="text-2xl">{title}</h2>
 							<p>{description}</p>
 							<p>done status: {done}</p>
-            </div>
-						{/each}
-					{/if}
+						</div>
+					{/each}
 				{:catch error}
-					<p>Error! {error}</p>
+					<!-- <p>Error! {error.status}</p> -->
+					{#if error.status === 403}
+						<p>You must be logged in to see the TODOs.</p>
+						<LoginRegister bind:myUser />
+					{/if}
 				{/await}
 			</div>
 		{:else if method === "POST"}
