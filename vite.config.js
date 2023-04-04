@@ -5,6 +5,7 @@ import presetWebFonts from "@unocss/preset-web-fonts";
 import presetIcons from "@unocss/preset-icons";
 import transformerDirectives from "@unocss/transformer-directives";
 import { presetHeroPatterns } from "@julr/unocss-preset-heropatterns";
+import { presetForms } from '@julr/unocss-preset-forms'
 import { defineConfig } from "vite";
 
 export default defineConfig({
@@ -12,7 +13,8 @@ export default defineConfig({
 		UnoCSS({
 			presets: [
 				presetHeroPatterns(),
-				presetUno(),
+        presetUno(),
+        presetForms(),
 				presetWebFonts({
 					provider: "google", // default provider
 					fonts: {
