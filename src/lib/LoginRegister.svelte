@@ -40,7 +40,10 @@
 				},
 			});
 			if (res.status === 400) {
-				throw new Error("Response not ok :(");
+				let data = await res.json();
+				console.log(JSON.stringify(data.error));
+				error = data.error.message;
+				throw new Error(error);
 			}
 			let data = await res.json();
 
@@ -55,7 +58,6 @@
 			error = false;
 			return data;
 		} catch (e) {
-			error = e;
 			inputPassword = "";
 			throw e;
 		}
@@ -77,7 +79,6 @@
 			if (res.status === 400) {
 				let data = await res.json();
 				error = data.error.details;
-				// console.log(error);
 				inputPassword = "";
 				// throw error;
 				throw new Error(error);
@@ -162,17 +163,22 @@
 		</form>
 		{#if error}
 			<div class="mt-4 rounded-lg bg-red-500 p-4" transition:fly={{ y: 20 }}>
-				{#each Object.values(error) as errorObject}
-					{#each errorObject as errorMessage}
-						<p class="">{errorMessage.message}</p>
+				{#if typeof error === "string"}
+					<p class="">{error}</p>
+					<p class="">Please try again.</p>
+				{:else}
+					{#each Object.values(error) as errorObject}
+						{#each errorObject as errorMessage}
+							<p class="">{errorMessage.message}</p>
+						{/each}
 					{/each}
-				{/each}
-				<p class="">Please try again.</p>
+					<p class="">Please try again.</p>
+				{/if}
 			</div>
 		{/if}
 		{#if successfullyRegistered}
 			<div class="mt-4 rounded-lg bg-green-500 p-4" transition:fly={{ y: 20 }}>
-				<p class="">Sucessfully registered new user {registerUsername}!</p>
+				<p class="">Successfully registered new user {registerUsername}!</p>
 			</div>
 		{/if}
 	</div>
