@@ -7,13 +7,12 @@
 	// 4. Kräv sedan att användaren loggar in för att kunna se alla todos samt skapa nya samt redigera/ta bort todos .
 	// 5. Varje todo ska ha en delete-knapp bredvid. Gör det möjligt för användaren att ta bort todos från API:et.
 	// 6. Varje todo ska ha en redigera-knapp knapp bredvid. När man klickar på den ska input-fält för att fylla i titel och beskrivning dyka upp, där användaren kan redigera dessa. Gör så att input-fälten är ifyllda med de nuvarande värdena.
-	// TODO 7. Skapa funktionalitet för att utföra todos med ett knapptryck.
-	// 8. Dela upp dina todos i en “Att göra”-lista samt en “Avklarade ärenden”-lista.
+	// 7. Skapa funktionalitet för att utföra todos med ett knapptryck.
+	// 8. TODO Dela upp dina todos i en “Att göra”-lista samt en “Avklarade ärenden”-lista.
 
 	import axios from "axios";
 	import LoginRegister from "$lib/LoginRegister.svelte";
 	import { fly, fade } from "svelte/transition";
-	import { onMount } from "svelte";
 
 	let myUser = {};
 
@@ -118,6 +117,7 @@
 				return todo;
 			}
 		});
+		console.log(updatedTodos);
 		todos = updatedTodos;
 		edit[id] = false;
 		clearInputs();
@@ -155,10 +155,16 @@
 							<h2 class="p-1 text-2xl">{title}</h2>
 							<p class="p-1">{description}</p>
 							<input
+								on:change={async () => {
+									todoTitle = title;
+									todoDescription = description;
+									todoDone = !done;
+									updateTodo(id);
+								}}
 								type="checkbox"
+								class:!bg-green-500={done}
 								class="h-6 w-6 self-start"
 								checked={done}
-								disabled
 								name=""
 								id="" />
 						</div>
@@ -171,8 +177,8 @@
 									todoDone = done;
 									edit[id] = true;
 								}}
-								class="p-4">✏</button>
-							<button on:click={async () => deleteTodo(id)} class="p-4">❌</button>
+								class="p-1">✏</button>
+							<button on:click={async () => deleteTodo(id)} class="p-1">❌</button>
 						</div>
 					{:else}
 						<div class="flex-col">
@@ -180,7 +186,7 @@
 								on:input={() => {
 									event.target.style.height = event.target.scrollHeight + "px";
 								}}
-								class="h-[40px] p-1 text-2xl"
+								class="h-[40px] w-60 p-px text-2xl"
 								bind:value={todoTitle} />
 							<!-- <h2 class="text-2xl">{title}</h2> -->
 							<textarea
@@ -188,11 +194,12 @@
 								on:input={() => {
 									event.target.style.height = event.target.scrollHeight + "px";
 								}}
-								class="h-[40px] p-1 "
+								class="h-[40px]  w-60 p-px "
 								bind:value={todoDescription} />
 
 							<input
 								type="checkbox"
+								class:!bg-green-500={done}
 								class="h-6 w-6 self-start"
 								bind:checked={todoDone}
 								name=""
@@ -210,15 +217,13 @@
 									}
 									updateTodo(id);
 								}}
-								class="p-4">✅</button>
+								class="p-px">✅</button>
 
-							<button on:click={async () => deleteTodo(id)} class="p-4">❌</button>
+							<button on:click={async () => deleteTodo(id)} class="p-px">❌</button>
 						</div>
 					{/if}
 				</div>
 			{/each}
-
-			<!-- <p>Error! {error.status}</p> -->
 		</div>
 	{/if}
 	{#if !myUser.hasOwnProperty("user")}
