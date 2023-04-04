@@ -29,17 +29,17 @@
 		todos = await getTodos();
 	}
 
-  let deleteTodo = async (id) => {
+	let deleteTodo = async (id) => {
 		const deleteTodo = await sendRequest("DELETE", `http://127.0.0.1:1337/api/todos/${id}`);
 		todos = todos.filter((todo) => todo.id !== id);
 		return deleteTodo;
 	};
 
-  function updateTodoList(updatedTodo) {
-    const index = todos.findIndex(todo => todo.id === updatedTodo.id);
-    todos[index] = updatedTodo;
-    todos = [...todos]; // Trigger reactivity
-  }
+	function updateTodoList(updatedTodo) {
+		const index = todos.findIndex((todo) => todo.id === updatedTodo.id);
+		todos[index] = updatedTodo;
+		todos = [...todos]; // Trigger reactivity
+	}
 
 	const getTodos = async () => {
 		const data = await sendRequest("GET", "http://127.0.0.1:1337/api/todos");
@@ -105,10 +105,10 @@
 		<div
 			class="border-1 h-[600px] flex-row overflow-auto rounded-md border-green-500 p-2 [&>*]:m-2">
 			<div>
-				<TodoList {todos} deleteTodo={deleteTodo} updateTodoList={updateTodoList} done={true} />
+				<TodoList {todos} {deleteTodo} {updateTodoList} done={true} />
 			</div>
 			<div>
-				<TodoList {todos} deleteTodo={deleteTodo} updateTodoList={updateTodoList} done={false} />
+				<TodoList {todos} {deleteTodo} {updateTodoList} done={false} />
 			</div>
 		</div>
 	{/if}
