@@ -8,7 +8,6 @@
 	export let todos;
 	let finishedTodos;
 	let unfinishedTodos;
-	export let done;
 	export let updateTodoList;
 	export let deleteTodo;
 	let todoTitle;
