@@ -11,6 +11,7 @@
 	// 8. TODO Dela upp dina todos i en “Att göra”-lista samt en “Avklarade ärenden”-lista.
 
 	import { fly, fade } from "svelte/transition";
+  import { flip } from "svelte/animate";
 	import LoginRegister from "$lib/LoginRegister.svelte";
 	import TodoList from "$lib/TodoList.svelte";
 	import { sendRequest } from "$lib/api";
@@ -109,15 +110,9 @@
 	</div>
 
 	{#if todos.length > 0}
-		<div
-			class="border-1 h-[600px] flex-row overflow-auto rounded-md border-green-500 p-2 [&>*]:m-2">
-			<div>
-				<TodoList {todos} {deleteTodo} {updateTodoList} done={true} />
-			</div>
-			<div>
+		
+			
 				<TodoList {todos} {deleteTodo} {updateTodoList} done={false} />
-			</div>
-		</div>
 	{/if}
 	{#if !myUser.hasOwnProperty("user")}
 		<p class="rounded-lg border-4 border-red-500 p-2">You must be logged in to see the TODOs.</p>
