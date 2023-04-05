@@ -13,6 +13,8 @@
     "05lektion5",
     "crud",
     "todo-app",
+    "06lektion6",
+    "pets",
 	];
 	let prefix = "/";
 </script>
