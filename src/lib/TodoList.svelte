@@ -3,6 +3,8 @@
 	import { sendRequest } from "$lib/api";
 
 	export let todos;
+	let finishedTodos;
+	let unfinishedTodos;
 	export let done;
 	export let updateTodoList;
 	export let deleteTodo;
@@ -12,11 +14,9 @@
 	let edit = [];
 
 	$: {
-		if (done) {
-			todos = todos.filter((todo) => todo.attributes.done);
-		} else {
-			todos = todos.filter((todo) => !todo.attributes.done);
-		}
+		finishedTodos = todos.filter((todo) => todo.attributes.done);
+
+		unfinishedTodos = todos.filter((todo) => !todo.attributes.done);
 	}
 
 	export function clearInputs() {
@@ -55,82 +55,88 @@
 	};
 </script>
 
-{#each Object.values(todos) as { id, attributes: { title, description, done } } (id)}
-	<div
-		transition:fly={{ y: 30 }}
-		class:bg-green-200={done}
-		class="m-2 flex max-w-[600px] flex-row justify-between rounded-lg bg-blue-200 p-4">
-		{#if !edit[id]}
-			<div class="flex-col">
-				<h2 class="p-1 text-2xl">{title}</h2>
-				<p class="p-1">{description}</p>
-				<input
-					on:change={async () => {
-						todoTitle = title;
-						todoDescription = description;
-						todoDone = !done;
-						updateTodo(id);
-					}}
-					type="checkbox"
-					class:!bg-green-500={done}
-					class="h-6 w-6 self-start"
-					checked={done}
-					name=""
-					id="" />
-			</div>
-			<div class="flex w-20 flex-row items-start justify-end [&>*]:m-2">
-				<button
-					on:click={async () => {
-						edit = [];
-						todoTitle = title;
-						todoDescription = description;
-						todoDone = done;
-						edit[id] = true;
-					}}
-					class="p-1">✏</button>
-				<button on:click={async () => deleteTodo(id)} class="p-1">❌</button>
-			</div>
-		{:else}
-			<div class="flex-col">
-				<textarea
-					on:input={() => {
-						event.target.style.height = event.target.scrollHeight + "px";
-					}}
-					class="h-[40px] w-60 p-px text-2xl"
-					bind:value={todoTitle} />
-				<!-- <h2 class="text-2xl">{title}</h2> -->
-				<textarea
-					cols="54"
-					on:input={() => {
-						event.target.style.height = event.target.scrollHeight + "px";
-					}}
-					class="h-[40px]  w-60 p-px "
-					bind:value={todoDescription} />
+<div class="border-1 h-[600px] flex-row overflow-auto rounded-md border-green-500 p-2 [&>*]:m-2">
+	{#each [finishedTodos, unfinishedTodos] as todos}
+		<div>
+			{#each Object.values(todos) as { id, attributes: { title, description, done } } (id)}
+				<div
+					transition:fly={{ y: 30 }}
+					class:bg-green-200={done}
+					class="m-2 flex max-w-[600px] flex-row justify-between rounded-lg bg-blue-200 p-4">
+					{#if !edit[id]}
+						<div class="flex-col">
+							<h2 class="p-1 text-2xl">{title}</h2>
+							<p class="p-1">{description}</p>
+							<input
+								on:change={async () => {
+									todoTitle = title;
+									todoDescription = description;
+									todoDone = !done;
+									updateTodo(id);
+								}}
+								type="checkbox"
+								class:!bg-green-500={done}
+								class="h-6 w-6 self-start"
+								checked={done}
+								name=""
+								id="" />
+						</div>
+						<div class="flex w-20 flex-row items-start justify-end [&>*]:m-2">
+							<button
+								on:click={async () => {
+									edit = [];
+									todoTitle = title;
+									todoDescription = description;
+									todoDone = done;
+									edit[id] = true;
+								}}
+								class="p-1">✏</button>
+							<button on:click={async () => deleteTodo(id)} class="p-1">❌</button>
+						</div>
+					{:else}
+						<div class="flex-col">
+							<textarea
+								on:input={() => {
+									event.target.style.height = event.target.scrollHeight + "px";
+								}}
+								class="h-[40px] w-60 p-px text-2xl"
+								bind:value={todoTitle} />
+							<!-- <h2 class="text-2xl">{title}</h2> -->
+							<textarea
+								cols="54"
+								on:input={() => {
+									event.target.style.height = event.target.scrollHeight + "px";
+								}}
+								class="h-[40px]  w-60 p-px "
+								bind:value={todoDescription} />
 
-				<input
-					type="checkbox"
-					class:!bg-green-500={done}
-					class="h-6 w-6 self-start"
-					bind:checked={todoDone}
-					name=""
-					id="" />
-			</div>
-			<div class="flex w-20 flex-row items-start justify-end [&>*]:m-2">
-				<button
-					on:click={async () => {
-						if (done === todoDone && title === todoTitle && description === todoDescription) {
-							edit[id] = false;
-							todoTitle = "";
-							todoDescription = "";
-							todoDone = false;
-							return;
-						}
-						updateTodo(id);
-					}}
-					class="p-px">✅</button>
+							<input
+								type="checkbox"
+								class:!bg-green-500={done}
+								class="h-6 w-6 self-start"
+								bind:checked={todoDone}
+								name=""
+								id="" />
+						</div>
+						<div class="flex w-20 flex-row items-start justify-end [&>*]:m-2">
+							<button
+								on:click={async () => {
+									if (done === todoDone && title === todoTitle && description === todoDescription) {
+										edit[id] = false;
+										todoTitle = "";
+										todoDescription = "";
+										todoDone = false;
+										return;
+									}
+									updateTodo(id);
+								}}
+								class="p-px">✅</button>
 
-				<button on:click={async () => deleteTodo(id)} class="p-px">❌</button>
-			</div>
-		{/if}
-	</div>
-{/each}
+							<button on:click={async () => deleteTodo(id)} class="p-px">❌</button>
+						</div>
+					{/if}
+				</div>
+			{/each}
+		</div>
+	{/each}
+</div>
