@@ -97,7 +97,7 @@
 </script>
 
 <main class="flex flex-col items-center [&>*]:m-4">
-	<div class="flex w-full flex-row items-center justify-between">
+	<div class="flex w-full flex-row justify-between ">
 		<h1 class="mx-auto text-5xl">My TODOs</h1>
 
 		<button
@@ -109,9 +109,7 @@
 	</div>
 
 	{#if todos.length > 0}
-		
-			
-				<TodoList {todos} {deleteTodo} {updateTodoList} done={false} />
+		<TodoList {todos} {deleteTodo} {updateTodoList} done={false} />
 	{/if}
 	{#if !myUser.hasOwnProperty("user")}
 		<p class="rounded-lg border-4 border-red-500 p-2">You must be logged in to see the TODOs.</p>
