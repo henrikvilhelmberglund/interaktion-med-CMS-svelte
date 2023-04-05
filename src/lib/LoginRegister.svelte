@@ -5,7 +5,7 @@
 	onMount(async () => {
 		let token = sessionStorage.getItem("token");
 		if (token) {
-			let res = await fetch("http://127.0.0.1:1337/api/users/me", {
+			let res = await fetch("http://127.0.0.1:1337/api/users/me?populate=deep,3", {
 				headers: {
 					Authorization: `Bearer ${sessionStorage.getItem("token")}`,
 				},
