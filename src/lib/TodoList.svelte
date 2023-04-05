@@ -1,5 +1,8 @@
 <script>
 	import { fly } from "svelte/transition";
+	import { flip } from "svelte/animate";
+	import { quintOut } from "svelte/easing";
+	import { crossfade } from "svelte/transition";
 	import { sendRequest } from "$lib/api";
 
 	export let todos;
@@ -53,6 +56,24 @@
 		updateTodoList(updatedTodo);
 		return updatedTodo;
 	};
+
+	const [send, receive] = crossfade({
+		duration: (d) => Math.sqrt(d * 200),
+
+		fallback(node, params) {
+			const style = getComputedStyle(node);
+			const transform = style.transform === "none" ? "" : style.transform;
+
+			return {
+				duration: 600,
+				easing: quintOut,
+				css: (t) => `
+					transform: ${transform} scale(${t});
+					opacity: ${t}
+				`,
+			};
+		},
+	});
 </script>
 
 <div class="border-1 h-[600px] flex-row overflow-auto rounded-md border-green-500 p-2 [&>*]:m-2">
@@ -60,7 +81,9 @@
 		<div>
 			{#each Object.values(todos) as { id, attributes: { title, description, done } } (id)}
 				<div
-					transition:fly={{ y: 30 }}
+					in:receive={{ key: id }}
+					out:send={{ key: id }}
+					animate:flip={{ duration: 300 }}
 					class:bg-green-200={done}
 					class="m-2 flex max-w-[600px] flex-row justify-between rounded-lg bg-blue-200 p-4">
 					{#if !edit[id]}

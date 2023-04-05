@@ -11,6 +11,7 @@
 	// 8. TODO Dela upp dina todos i en “Att göra”-lista samt en “Avklarade ärenden”-lista.
 
 	import { fly, fade } from "svelte/transition";
+  import { flip } from "svelte/animate";
 	import LoginRegister from "$lib/LoginRegister.svelte";
 	import TodoList from "$lib/TodoList.svelte";
 	import { sendRequest } from "$lib/api";
