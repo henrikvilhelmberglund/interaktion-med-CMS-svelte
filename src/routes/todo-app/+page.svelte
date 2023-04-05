@@ -8,10 +8,9 @@
 	// 5. Varje todo ska ha en delete-knapp bredvid. Gör det möjligt för användaren att ta bort todos från API:et.
 	// 6. Varje todo ska ha en redigera-knapp knapp bredvid. När man klickar på den ska input-fält för att fylla i titel och beskrivning dyka upp, där användaren kan redigera dessa. Gör så att input-fälten är ifyllda med de nuvarande värdena.
 	// 7. Skapa funktionalitet för att utföra todos med ett knapptryck.
-	// 8. TODO Dela upp dina todos i en “Att göra”-lista samt en “Avklarade ärenden”-lista.
+	// 8. Dela upp dina todos i en “Att göra”-lista samt en “Avklarade ärenden”-lista.
 
 	import { fly, fade } from "svelte/transition";
-  import { flip } from "svelte/animate";
 	import LoginRegister from "$lib/LoginRegister.svelte";
 	import TodoList from "$lib/TodoList.svelte";
 	import { sendRequest } from "$lib/api";

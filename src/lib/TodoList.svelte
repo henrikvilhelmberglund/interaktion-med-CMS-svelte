@@ -1,5 +1,4 @@
 <script>
-	import { fly } from "svelte/transition";
 	import { flip } from "svelte/animate";
 	import { quintOut } from "svelte/easing";
 	import { crossfade } from "svelte/transition";
